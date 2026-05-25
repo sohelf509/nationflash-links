@@ -1,31 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <!-- These tags generate the WhatsApp/Telegram preview -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- OG tags for WhatsApp/Telegram/Facebook preview -->
   <meta property="og:site_name" content="Nation Flash" />
   <meta property="og:type" content="article" />
-
-  <!-- These get filled dynamically via JS from URL params -->
   <meta id="og-title" property="og:title" content="Nation Flash" />
-  <meta id="og-description" property="og:description" content="" />
+  <meta id="og-description" property="og:description" content="Read the latest news on Nation Flash" />
   <meta id="og-image" property="og:image" content="" />
+
+  <title>Nation Flash</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #C62828;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 24px;
+    }
+    .logo {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .tagline {
+      font-size: 14px;
+      opacity: 0.75;
+      margin-bottom: 36px;
+    }
+    .card {
+      background: rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 24px 20px;
+      max-width: 360px;
+      width: 100%;
+      margin-bottom: 24px;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .status {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .substatus {
+      font-size: 12px;
+      opacity: 0.65;
+    }
+    .btn {
+      display: inline-block;
+      background: white;
+      color: #C62828;
+      padding: 13px 28px;
+      border-radius: 28px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transition: opacity 0.2s;
+    }
+    .btn:active { opacity: 0.85; }
+    .footer {
+      font-size: 11px;
+      opacity: 0.5;
+      margin-top: 24px;
+    }
+  </style>
 </head>
 <body>
+  <div class="logo">📰 Nation Flash</div>
+  <div class="tagline">Bengali News · Jobs · Magazine</div>
+
+  <div class="card">
+    <div class="spinner" id="spinner"></div>
+    <div class="status" id="status">Opening app...</div>
+    <div class="substatus" id="substatus">Redirecting to Nation Flash</div>
+  </div>
+
+  
+    class="btn"
+    href="https://play.google.com/store/apps/details?id=com.hisabone.app"
+    id="storeBtn"
+  >
+    Download on Play Store
+  </a>
+
+  <div class="footer">Nation Flash — Stay Informed</div>
+
   <script>
     const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
+    const id   = params.get("id");
+    const type = params.get("type") || "news";
 
-    // Try opening app
-    if (id) {
-      window.location = `nationflash://article/${id}`;
+    // Build the correct deep link based on type
+    function buildDeepLink(type, id) {
+      if (type === "magazine") return `nationflash://magazine/${id}`;
+      if (type === "job")      return `nationflash://job/${id}`;
+      return                          `nationflash://article/${id}`;
     }
 
-    // Fallback to Play Store after 2s
-    setTimeout(() => {
-      window.location = "https://play.google.com/store/apps/details?id=com.hisabone.app";
-    }, 2000);
+    if (id) {
+      const deepLink = buildDeepLink(type, id);
+
+      // Try to open the app
+      window.location.href = deepLink;
+
+      // After 2s, if app didn't open → Play Store
+      setTimeout(() => {
+        document.getElementById("spinner").style.display  = "none";
+        document.getElementById("status").textContent     = "App not installed?";
+        document.getElementById("substatus").textContent  = "Download Nation Flash from the Play Store";
+        window.location.href =
+          "https://play.google.com/store/apps/details?id=com.hisabone.app";
+      }, 2000);
+
+    } else {
+      // No ID in URL — just show Play Store button
+      document.getElementById("spinner").style.display  = "none";
+      document.getElementById("status").textContent     = "Welcome to Nation Flash";
+      document.getElementById("substatus").textContent  = "Download the app to read the latest news";
+    }
   </script>
-  <p>Opening Nation Flash...</p>
 </body>
 </html>
